@@ -59,4 +59,45 @@ public class APITest {
 
     }
 
+    @Test
+    public void favoriteDesFavourite(){
+        favourite();
+        desFavourite();
+    }
+
+
+
+    public void favourite(){
+
+        Response response =
+                given().contentType("application/json")
+                        .header("x-api-key", " DEMO-API-KEY")
+                .body("{\n" +
+                        "  \"message\": \"DUPLICATE_FAVOURITE - favourites are unique for account + image_id + sub_id\",\n" +
+                        "  \"headers\": {\n" +
+                        "    \"Access-Control-Allow-Origin\": \"*\"\n" +
+                        "  },\n" +
+                        "  \"status\": 400,\n" +
+                        "  \"level\": \"info\"\n" +
+                        "}")
+                .when().post("https://api.thecatapi.com/v1/favourites");
+                String id = response.jsonPath().getString("id");
+                vote_id = id;
+
+    }
+
+    public void desFavourite(){
+
+        Response response =
+                given().contentType("application/json")
+                .header("x-api-key", "{$$.env.x-api-key}")
+                .pathParam("favourite_id", vote_id)
+                .when().delete("https://api.thecatapi.com/v1/favourites/{favourite_id}");
+
+        response.then().statusCode(400).body("message", containsString("SUCCESS"));
+        System.out.println("Return   => "+ response.body().asString());
+
+    }
+
+
 }
