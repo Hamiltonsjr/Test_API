@@ -8,6 +8,8 @@ import static io.restassured.RestAssured.given;
 
 public class APITest {
 
+    String vote_id;
+
     @Test
     public void register(){
 
@@ -33,8 +35,28 @@ public class APITest {
         response.then().statusCode(400).body("message", containsString("image_id"));
 
         System.out.println("Return =>" + response.body().asString());
-        String id = response.jsonPath().getString("image_id");
-        System.out.println("ID =>"+ id);
+        String id = response.jsonPath().getString("id");
+        vote_id = id;
+        System.out.println("ID =>" + id);
 
     }
+
+    public void deleteVote(){
+        vote();
+        delVote();
+
+    }
+    @Test
+    public void delVote() {
+        String url = "https://api.thecatapi.com/v1/votes/{vote_id}";
+
+        Response response =
+                given().contentType("application/json")
+                        .header("x-api-key", "fabb5e18-eaec-48b3-846b-56f9873526f5")
+                .pathParam("vote_id",vote_id)
+                .when().delete(url);
+        response.then().statusCode(400).body("message", containsString("SUCCESS"));
+
+    }
+
 }
